@@ -1,5 +1,11 @@
 package com.dev.musify.exoplayer
 
+import android.support.v4.media.MediaMetadataCompat
+import com.dev.musify.data.entities.remote.MusicDatabase
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
+
 /**
 In this class we will have the list of songes fetched from firebase
  Now that process may take some time, coz they are songs and in our service we don't have that possibility to wait until this
@@ -9,7 +15,16 @@ In this class we will have the list of songes fetched from firebase
 
  BASICALLY THIS CLASS ACTS LIKE A PAUSE TO SERVICE AND LOAD ALL SONGS FIRST:)
  */
-class FirebaseMusicSource {
+class FirebaseMusicSource @Inject constructor(
+        private val musicDatabase: MusicDatabase
+) {
+
+    var songs = emptyList<MediaMetadataCompat>()
+
+    //Function to fetch songs
+    suspend fun fetchMediaData() = withContext(Dispatchers.IO){
+
+    }
 
     private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()
 
