@@ -1,5 +1,9 @@
 package com.dev.musify.data.entities
 
 data class Song (
-    val mediaId: String = "", val title: String = "", val subtitle: String = "", val songUrl: String = "", val imageUrl: String = ""
+    val mediaId: String = "",
+    val title: String = "",
+    val subtitle: String = "",
+    val songUrl: String = "",
+    val imageUrl: String = ""
 )
