@@ -1,6 +1,6 @@
 package com.dev.musify.data.entities.remote
 
-import com.dev.musify10.other.Constants.SONG_COLLECTION
+import com.dev.musify.other.Constants.SONG_COLLECTION
 import com.dev.musify.data.entities.Song
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.tasks.await
