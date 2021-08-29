@@ -15,13 +15,13 @@ import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 /**
-In this class we will have the list of songes fetched from firebase
- Now that process may take some time, coz they are songs and in our service we don't have that possibility to wait until this
- process gets finished.
+In this class we will have the list of songs fetched from firebase
+Now that process may take some time, coz they are songs and in our service we don't have that possibility to wait until this
+process gets finished.
 
- So we create that 'state' variable and execute certain actions according to the state condition
+So we create that 'state' variable and execute certain actions according to the state condition
 
- BASICALLY THIS CLASS ACTS LIKE A PAUSE TO SERVICE AND LOAD ALL SONGS FIRST:)
+BASICALLY THIS CLASS ACTS LIKE A PAUSE TO SERVICE AND LOAD ALL SONGS FIRST:)
  */
 
 /**
@@ -31,28 +31,29 @@ In this class we will have the list of songes fetched from firebase
  * to MediaMetadataCompat properties and that is what we do in fun fetchMediaData()
  */
 class FirebaseMusicSource @Inject constructor(
-        private val musicDatabase: MusicDatabase
+    private val musicDatabase: MusicDatabase
 ) {
 
     //This is similar to song class. Difference is it contains other meta data of the song.
     var songs = emptyList<MediaMetadataCompat>()
 
     //Function to fetch songs
-    suspend fun fetchMediaData() = withContext(Dispatchers.IO){
-        state = State.STATE_INITIALIZING //Before downloading songs State->INITIALIZING && after downloading State->INITIALIZED
+    suspend fun fetchMediaData() = withContext(Dispatchers.IO) {
+        state =
+            State.STATE_INITIALIZING //Before downloading songs State->INITIALIZING && after downloading State->INITIALIZED
         val allSongs = musicDatabase.getAllSongs()
         songs = allSongs.map { song ->
             MediaMetadataCompat.Builder()
-                    .putString(METADATA_KEY_ARTIST, song.subtitle)
-                    .putString(METADATA_KEY_MEDIA_ID, song.mediaId)
-                    .putString(METADATA_KEY_TITLE, song.title)
-                    .putString(METADATA_KEY_DISPLAY_TITLE, song.title)
-                    .putString(METADATA_KEY_DISPLAY_ICON_URI, song.imageUrl)
-                    .putString(METADATA_KEY_MEDIA_URI, song.songUrl)
-                    .putString(METADATA_KEY_ALBUM_ART_URI, song.imageUrl)
-                    .putString(METADATA_KEY_DISPLAY_SUBTITLE, song.subtitle)
-                    .putString(METADATA_KEY_DISPLAY_DESCRIPTION, song.subtitle)
-                    .build()
+                .putString(METADATA_KEY_ARTIST, song.subtitle)
+                .putString(METADATA_KEY_MEDIA_ID, song.mediaId)
+                .putString(METADATA_KEY_TITLE, song.title)
+                .putString(METADATA_KEY_DISPLAY_TITLE, song.title)
+                .putString(METADATA_KEY_DISPLAY_ICON_URI, song.imageUrl)
+                .putString(METADATA_KEY_MEDIA_URI, song.songUrl)
+                .putString(METADATA_KEY_ALBUM_ART_URI, song.imageUrl)
+                .putString(METADATA_KEY_DISPLAY_SUBTITLE, song.subtitle)
+                .putString(METADATA_KEY_DISPLAY_DESCRIPTION, song.subtitle)
+                .build()
         }
         state = State.STATE_INITIALIZED
     }
@@ -65,7 +66,7 @@ class FirebaseMusicSource @Inject constructor(
         val concatenatingMediaSource = ConcatenatingMediaSource()
         songs.forEach { song ->
             val mediaSource = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(song.getString(METADATA_KEY_MEDIA_URI).toUri())
+                .createMediaSource(song.getString(METADATA_KEY_MEDIA_URI).toUri())
             concatenatingMediaSource.addMediaSource(mediaSource)
         }
         return concatenatingMediaSource
@@ -73,14 +74,14 @@ class FirebaseMusicSource @Inject constructor(
 
     fun asMediaItems() = songs.map { song ->
         val desc = MediaDescriptionCompat.Builder()
-                .setMediaUri(song.getString(METADATA_KEY_MEDIA_URI).toUri())
-                .setTitle(song.description.title)
-                .setSubtitle(song.description.subtitle)
-                .setMediaId(song.description.mediaId)
-                .setIconUri(song.description.iconUri)
-                .build()
+            .setMediaUri(song.getString(METADATA_KEY_MEDIA_URI).toUri())
+            .setTitle(song.description.title)
+            .setSubtitle(song.description.subtitle)
+            .setMediaId(song.description.mediaId)
+            .setIconUri(song.description.iconUri)
+            .build()
         MediaBrowserCompat.MediaItem(desc, FLAG_PLAYABLE)
-    }
+    }.toMutableList()
 
     private val onReadyListeners = mutableListOf<(Boolean) -> Unit>()
 
@@ -90,7 +91,7 @@ class FirebaseMusicSource @Inject constructor(
         * Before downloading songs State->INITIALIZING && after downloading State->INITIALIZED
         */
         set(value) {
-            if(value == State.STATE_INITIALIZED || value == State.STATE_ERROR) {
+            if (value == State.STATE_INITIALIZED || value == State.STATE_ERROR) {
                 synchronized(onReadyListeners) {
                     field = value
                     onReadyListeners.forEach { listener ->
@@ -103,7 +104,7 @@ class FirebaseMusicSource @Inject constructor(
         }
 
     fun whenReady(action: (Boolean) -> Unit): Boolean {
-        if(state == State.STATE_CREATED || state == State.STATE_INITIALIZING) {
+        if (state == State.STATE_CREATED || state == State.STATE_INITIALIZING) {
             onReadyListeners += action
             return false
         } else {

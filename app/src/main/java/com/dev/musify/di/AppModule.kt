@@ -5,6 +5,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.dev.musify.R
+import com.dev.musify.exoplayer.MusicServiceConnection
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,6 +17,16 @@ import javax.inject.Singleton
 @InstallIn(ApplicationComponent::class)
 //Create a manual that how to create a dependency
 object AppModule {
+
+    @Singleton
+    @Provides
+    fun provideMusicServiceConnection(
+        @ApplicationContext context: Context
+    ) = MusicServiceConnection(context)
+
+    /*@Singleton
+    @Provides
+    fun provideSwipeSongAdapter() = SwipeSongAdapter()*/
 
     @Singleton
     @Provides

@@ -16,10 +16,10 @@ import com.dev.musify.other.Constants.NOTIFICATION_ID
 import com.google.android.exoplayer2.ui.PlayerNotificationManager
 
 class MusicNotificationManager(
-        private val context: Context,
-        sessionToken: MediaSessionCompat.Token,
-        notificationListener: PlayerNotificationManager.NotificationListener,
-        private val newSongCallback: () -> Unit
+    private val context: Context,
+    sessionToken: MediaSessionCompat.Token,
+    notificationListener: PlayerNotificationManager.NotificationListener,
+    private val newSongCallback: () -> Unit
 ) {
 
     private val notificationManager: PlayerNotificationManager
@@ -27,13 +27,13 @@ class MusicNotificationManager(
     init {
         val mediaController = MediaControllerCompat(context, sessionToken)
         notificationManager = PlayerNotificationManager.createWithNotificationChannel(
-                context,
-                NOTIFICATION_CHANNEL_ID,
-                R.string.notification_channel_name,
-                R.string.notification_channel_description,
-                NOTIFICATION_ID,
-                DescriptionAdapter(mediaController),
-                notificationListener
+            context,
+            NOTIFICATION_CHANNEL_ID,
+            R.string.notification_channel_name,
+            R.string.notification_channel_description,
+            NOTIFICATION_ID,
+            DescriptionAdapter(mediaController),
+            notificationListener
         ).apply {
             setSmallIcon(R.drawable.ic_music)
             setMediaSessionToken(sessionToken)
@@ -45,9 +45,11 @@ class MusicNotificationManager(
     }
 
     private inner class DescriptionAdapter(
-            private val mediaController: MediaControllerCompat
-    ) : PlayerNotificationManager.MediaDescriptionAdapter{
+        private val mediaController: MediaControllerCompat
+    ) : PlayerNotificationManager.MediaDescriptionAdapter {
+
         override fun getCurrentContentTitle(player: Player): CharSequence {
+            newSongCallback()
             return mediaController.metadata.description.title.toString()
         }
 
@@ -59,19 +61,22 @@ class MusicNotificationManager(
             return mediaController.metadata.description.subtitle.toString()
         }
 
-        override fun getCurrentLargeIcon(player: Player, callback: PlayerNotificationManager.BitmapCallback): Bitmap? {
+        override fun getCurrentLargeIcon(
+            player: Player,
+            callback: PlayerNotificationManager.BitmapCallback
+        ): Bitmap? {
             Glide.with(context).asBitmap()
-                    .load(mediaController.metadata.description.iconUri)
-                    .into(object : CustomTarget<Bitmap>() {
-                        override fun onResourceReady(
-                                resource: Bitmap,
-                                transition: Transition<in Bitmap>?
-                        ) {
-                            callback.onBitmap(resource)
-                        }
+                .load(mediaController.metadata.description.iconUri)
+                .into(object : CustomTarget<Bitmap>() {
+                    override fun onResourceReady(
+                        resource: Bitmap,
+                        transition: Transition<in Bitmap>?
+                    ) {
+                        callback.onBitmap(resource)
+                    }
 
-                        override fun onLoadCleared(placeholder: Drawable?) = Unit
-                    })
+                    override fun onLoadCleared(placeholder: Drawable?) = Unit
+                })
             return null
         }
     }

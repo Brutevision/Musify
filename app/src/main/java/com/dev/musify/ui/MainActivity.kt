@@ -1,8 +1,9 @@
-package com.dev.musify
+package com.dev.musify.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.bumptech.glide.RequestManager
+import com.dev.musify.R
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
